@@ -9,7 +9,8 @@ Both synchronous and asynchronous processing are supported.
 
 ## Architecture
 
-![Architecture](docs/architecture.png)
+![Uploading image.png…]()
+
 
 **Flow**
 
