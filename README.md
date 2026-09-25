@@ -9,7 +9,8 @@ Both synchronous and asynchronous processing are supported.
 
 ## Architecture
 
-![Uploading image.png…]()
+<img width="2720" height="2480" alt="image" src="https://github.com/user-attachments/assets/a2cac4f6-4536-41db-af93-03f9980e1d83" />
+
 
 
 **Flow**
