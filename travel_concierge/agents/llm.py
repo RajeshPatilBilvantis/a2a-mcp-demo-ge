@@ -1,19 +1,14 @@
 import json
-import os
-
-from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
-MODEL = "deepseek-chat"
-MAX_TURNS = 8
+from travel_concierge import config
+
+MODEL = config.LLM_MODEL
+MAX_TURNS = config.LLM_MAX_TURNS
 
 
 def client():
-    key = os.getenv("DEEPSEEK_API_KEY")
-    if not key:
-        raise RuntimeError("DEEPSEEK_API_KEY is not set in .env")
-    return OpenAI(api_key=key, base_url="https://api.deepseek.com")
+    return OpenAI(api_key=config.deepseek_key(), base_url=config.LLM_BASE_URL)
 
 
 def extract_json(text):

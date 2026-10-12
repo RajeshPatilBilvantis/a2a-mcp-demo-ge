@@ -7,17 +7,8 @@ from urllib.parse import quote
 
 import pandas as pd
 
-from fmt import display_rows
-from dotenv import load_dotenv
-
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
-
-
-def _creds():
-    user, pw = os.getenv("GMAIL_ADDRESS"), os.getenv("GMAIL_APP_PASSWORD")
-    if not user or not pw:
-        raise RuntimeError("GMAIL_ADDRESS / GMAIL_APP_PASSWORD not set in .env")
-    return user, pw
+from travel_concierge import config
+from travel_concierge.formatting import display_rows
 
 
 def _table(rows, reply_address, subject):
@@ -40,7 +31,7 @@ def _table(rows, reply_address, subject):
 
 def send(to, subject, intro, rows=None, attachment=None, reply_to_id=None, approve=False):
     """Send mail; returns the new Message-ID. reply_to_id threads it under an earlier message."""
-    user, pw = _creds()
+    user, pw = config.gmail_credentials()
     msg = EmailMessage()
     msg["From"], msg["To"], msg["Subject"] = user, to, subject
     msg["Message-ID"] = make_msgid()
@@ -56,7 +47,7 @@ def send(to, subject, intro, rows=None, attachment=None, reply_to_id=None, appro
             msg.add_attachment(f.read(), maintype="application",
                                subtype="vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                                filename=os.path.basename(attachment))
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+    with smtplib.SMTP_SSL(config.SMTP_HOST, config.SMTP_PORT) as s:
         s.login(user, pw)
         s.send_message(msg)
     return msg["Message-ID"]

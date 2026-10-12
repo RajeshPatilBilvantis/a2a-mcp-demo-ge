@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 
-from store import xlsx_path
+from travel_concierge.storage import xlsx_path
 
 
 def write_options(data):

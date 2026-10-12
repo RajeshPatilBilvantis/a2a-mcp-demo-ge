@@ -1,16 +1,14 @@
 import re
 
+import pandas as pd
 import streamlit as st
 
-import booking_sim
-import reply_reader
-import emailer
-import excel_writer
-import store
-from agents import concierge
-from fmt import inr
-import pandas as pd
-from prompt_loader import get_prompt
+from travel_concierge import storage as store
+from travel_concierge.agents import concierge
+from travel_concierge.config import NIGHTS
+from travel_concierge.formatting import inr
+from travel_concierge.prompts import get_prompt
+from travel_concierge.services import booking, emailer, excel, reply_reader
 
 st.set_page_config(page_title="Travel Concierge", page_icon="✈️", layout="wide")
 st.title("✈️ Travel Concierge")
@@ -29,11 +27,11 @@ if go:
             with st.status("Concierge is working...", expanded=True) as status:
                 rows = concierge.run(city.strip(), log=lambda m: st.write("🔎 " + m))
                 data = store.new_request(city.strip(), email_addr.strip(), rows)
-                excel_writer.write_options(data)
+                excel.write_options(data)
                 data["subject"] = "Your travel options from %s [%s]" % (data["city"], data["token"])
                 data["message_id"] = emailer.send(
                     data["email"], data["subject"],
-                    get_prompt("EMAIL_TEMPLATE", city=data["city"], nights=concierge.NIGHTS),
+                    get_prompt("EMAIL_TEMPLATE", city=data["city"], nights=NIGHTS),
                     rows, store.xlsx_path(data), approve=True)
                 store.save(data)
                 status.update(label="Done - emailed to %s" % data["email"], state="complete")
@@ -66,7 +64,7 @@ if "token" in st.session_state:
                 st.info("No approval reply found yet.")
             else:
                 with st.status("Approval received for %s - booking (simulated)..." % oid, expanded=True) as status:
-                    booking_sim.simulate(data, oid, step=lambda m: st.write("⏳ " + m))
+                    booking.simulate(data, oid, step=lambda m: st.write("⏳ " + m))
                     status.update(label="Booked - confirmation emailed", state="complete")
                 st.rerun()
         except Exception as e:

@@ -1,11 +1,10 @@
 import itertools
 
-from agents import flight_agent, itinerary_agent
-from agents.llm import run_agent, extract_json
-from fmt import to_int
-from prompt_loader import get_prompt
-
-NIGHTS = 3
+from travel_concierge.agents import flight, itinerary
+from travel_concierge.agents.llm import extract_json, run_agent
+from travel_concierge.config import NIGHTS
+from travel_concierge.formatting import to_int
+from travel_concierge.prompts import get_prompt
 
 TOOLS = [
     {"type": "function", "function": {
@@ -29,11 +28,11 @@ def run(city, log=None):
     results = {}
 
     def do_flights(origin, destinations):
-        results["flights"] = flight_agent.run(origin, destinations, log).get("flights", [])
+        results["flights"] = flight.run(origin, destinations, log).get("flights", [])
         return str(results["flights"])
 
     def do_stays(destinations):
-        results["stays"] = itinerary_agent.run(destinations, log).get("stays", [])
+        results["stays"] = itinerary.run(destinations, log).get("stays", [])
         return str(results["stays"])
 
     reply = run_agent(get_prompt("CONCIERGE", city=city), "Plan trip options from %s." % city, TOOLS,

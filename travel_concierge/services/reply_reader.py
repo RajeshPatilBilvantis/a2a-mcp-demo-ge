@@ -3,7 +3,7 @@ import imaplib
 import re
 from email.header import decode_header, make_header
 
-from emailer import _creds
+from travel_concierge import config
 
 
 def _body(msg):
@@ -27,8 +27,8 @@ def _strip_quotes(text):
 def find_approval(token, sender, valid_ids):
     """Newest reply from `sender` with `token` in the subject saying 'APPROVE OPT-xx' (as sent by the
     email's Approve button). Returns the Option ID, or None."""
-    user, pw = _creds()
-    m = imaplib.IMAP4_SSL("imap.gmail.com")
+    user, pw = config.gmail_credentials()
+    m = imaplib.IMAP4_SSL(config.IMAP_HOST)
     m.login(user, pw)
     try:
         m.select('"[Gmail]/All Mail"', readonly=True)

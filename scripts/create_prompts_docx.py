@@ -1,6 +1,8 @@
 """One-off script: generates prompts.docx. After that, edit the prompts in Word."""
 from docx import Document
 
+from travel_concierge.config import PROMPTS_PATH
+
 PROMPTS = {
     "CONCIERGE": (
         "You are the Travel Concierge for DOMESTIC INDIAN travel only. The user lives in {city}. If {city} is not a "
@@ -48,5 +50,5 @@ doc.add_paragraph("Each Heading 1 is a prompt key. The paragraphs under it are t
 for key, text in PROMPTS.items():
     doc.add_heading(key, level=1)
     doc.add_paragraph(text)
-doc.save("prompts.docx")
-print("prompts.docx written")
+doc.save(PROMPTS_PATH)
+print("%s written" % PROMPTS_PATH)

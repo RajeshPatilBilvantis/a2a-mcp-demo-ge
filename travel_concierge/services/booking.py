@@ -1,11 +1,10 @@
 import datetime
 import uuid
 
-import emailer
-import excel_writer
-import store
-from fmt import inr
-from prompt_loader import get_prompt
+from travel_concierge import storage as store
+from travel_concierge.formatting import inr
+from travel_concierge.prompts import get_prompt
+from travel_concierge.services import emailer, excel
 
 
 def simulate(data, option_id, step=lambda m: None):
@@ -18,7 +17,7 @@ def simulate(data, option_id, step=lambda m: None):
     data["booking"] = {"option": o, "reference": "SIM-" + uuid.uuid4().hex[:6].upper(),
                        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}
     store.save(data)
-    path = excel_writer.add_booking(data)
+    path = excel.add_booking(data)
     step("Replying to %s with confirmation..." % data["email"])
     text = get_prompt("BOOKING_CONFIRMATION", option_id=option_id, city=o["City"],
                       reference=data["booking"]["reference"], route=o["Flight Route"], airline=o["Airline"],

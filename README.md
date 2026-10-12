@@ -14,23 +14,25 @@ All prompts are stored in `prompts.docx` and read at runtime. Edit them in Word;
 
 ## Setup
 
-1. Create the environment and install dependencies:
-   ```
-   python3 -m venv .venv
-   .venv/bin/pip install -r requirements.txt
-   ```
-2. Copy `.env.example` to `.env` and fill in:
-   - `DEEPSEEK_API_KEY`: your DeepSeek API key
-   - `GMAIL_ADDRESS`: the Gmail account that sends the emails
-   - `GMAIL_APP_PASSWORD`: a Gmail app password (requires 2-step verification)
-3. In Gmail settings, enable **IMAP** (needed to read the approval reply).
-4. (Optional) Regenerate the prompts file: `.venv/bin/python create_prompts_docx.py`. This overwrites any edits to `prompts.docx`.
+```
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+cp .env.example .env     # then fill in your keys
+```
+Fill in `.env`:
+- `DEEPSEEK_API_KEY`: your DeepSeek API key
+- `GMAIL_ADDRESS`: the Gmail account that sends the emails
+- `GMAIL_APP_PASSWORD`: a Gmail app password (requires 2-step verification)
+
+Also enable **IMAP** in Gmail settings (needed to read the approval reply).
 
 ## Run
 
 ```
 .venv/bin/streamlit run app.py
 ```
+
+Regenerate `data/prompts.docx` from defaults (overwrites your edits): `.venv/bin/python -m scripts.create_prompts_docx`
 
 ## Usage
 
@@ -39,22 +41,35 @@ All prompts are stored in `prompts.docx` and read at runtime. Edit them in Word;
 3. In the email, click the green **Approve** button on the option you want. It opens a pre-filled reply (`APPROVE OPT-03`); press Send.
 4. In the app, click **Check Gmail for approval**. The app reads the reply, simulates the booking (reference `SIM-XXXXXX`), adds a *Booking* sheet to the Excel, and replies in the original thread with the booking details and updated Excel. No real booking or payment is made.
 
-## Project layout
+## Project structure
 
-| File | Purpose |
-|---|---|
-| `app.py` | Streamlit UI |
-| `agents/concierge.py` | Concierge agent, delegation and flight × hotel combining |
-| `agents/flight_agent.py`, `agents/itinerary_agent.py` | Specialist agents |
-| `agents/llm.py` | DeepSeek client and tool-calling loop |
-| `agents/search_tool.py` | Web search tool (DuckDuckGo) used by the agents |
-| `prompt_loader.py`, `create_prompts_docx.py`, `prompts.docx` | Prompts in Word |
-| `excel_writer.py` | Builds and styles the Excel output |
-| `emailer.py` | Sends email via Gmail SMTP |
-| `reply_reader.py` | Reads the Approve reply via Gmail IMAP |
-| `booking_sim.py` | Simulated booking + threaded confirmation reply |
-| `fmt.py` | INR formatting and price parsing |
-| `store.py` | Saves each request to `outputs/<token>.json` |
+```
+.
+├── app.py                    # Streamlit UI (entry point)
+├── requirements.txt
+├── .env.example              # required secrets (copy to .env)
+├── data/
+│   └── prompts.docx          # all agent/email prompts, editable in Word
+├── outputs/                  # generated Excel + request state (git-ignored)
+├── scripts/
+│   └── create_prompts_docx.py  # generates data/prompts.docx
+└── travel_concierge/
+    ├── config.py             # paths, env/secrets, settings (NIGHTS, model)
+    ├── prompts.py            # reads prompts from the Word document
+    ├── formatting.py         # INR formatting and price parsing
+    ├── storage.py            # per-request state in outputs/<token>.json
+    ├── agents/
+    │   ├── llm.py            # DeepSeek client + tool-calling loop
+    │   ├── search.py         # web search tool
+    │   ├── concierge.py      # orchestrator: delegates, combines, sorts
+    │   ├── flight.py         # flight route expert
+    │   └── itinerary.py      # itinerary + 3★+ hotel expert
+    └── services/
+        ├── excel.py          # Excel output + Booking sheet
+        ├── emailer.py        # Gmail SMTP, HTML table with Approve buttons
+        ├── reply_reader.py   # Gmail IMAP: finds the APPROVE reply
+        └── booking.py        # simulated booking + threaded confirmation
+```
 
 ## Notes
 

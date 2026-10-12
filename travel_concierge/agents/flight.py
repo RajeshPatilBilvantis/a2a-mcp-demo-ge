@@ -1,6 +1,6 @@
-from agents.llm import run_agent_json
-from agents.search_tool import SEARCH_TOOL, web_search
-from prompt_loader import get_prompt
+from travel_concierge.agents.llm import run_agent_json
+from travel_concierge.agents.search import SEARCH_TOOL, web_search
+from travel_concierge.prompts import get_prompt
 
 
 def run(origin, destinations, log=None):

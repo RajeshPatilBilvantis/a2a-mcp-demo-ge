@@ -1,7 +1,6 @@
-import os
 from docx import Document
 
-PROMPTS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts.docx")
+from travel_concierge.config import PROMPTS_PATH
 
 
 def load_prompts(path=PROMPTS_PATH):

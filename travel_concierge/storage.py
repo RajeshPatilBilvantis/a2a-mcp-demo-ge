@@ -2,7 +2,7 @@ import json
 import os
 import uuid
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "outputs")
+from travel_concierge.config import OUTPUT_DIR as OUT
 
 
 def new_request(city, email, rows):
