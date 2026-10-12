@@ -1,0 +1,7 @@
+streamlit
+openai
+ddgs
+python-docx
+openpyxl
+pandas
+python-dotenv
